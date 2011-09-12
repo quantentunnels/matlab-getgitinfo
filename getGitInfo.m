@@ -1,5 +1,5 @@
 function gitInfo=getGitInfo()
-% Get information about the Git repository in the current directory, including: 
+% Matlab script to get information about the Git repository in the current directory, including: 
 %          - branch name of the current Git Repo 
 %          -Git SHA1 HASH of the most recent commit
 %          -url of corresponding remote repository, if one exists
