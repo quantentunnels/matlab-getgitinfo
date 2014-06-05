@@ -27,7 +27,8 @@ function gitInfo=getGitInfo()
 % http://www.andrewleifer.com
 % 12 September 2011
 %
-% 
+% Modified by 
+% Marius Hintsche June 2014
 %
 
 % Copyright 2011 Andrew Leifer. All rights reserved.
@@ -56,18 +57,21 @@ function gitInfo=getGitInfo()
 % authors and should not be interpreted as representing official policies, either expressed
 % or implied, of <copyright holder>.
 
+gitDir = git('rev-parse','--show-toplevel');
+gitDir = regexprep(gitDir,'\r\n|\n|\r',''); %remove trailing newline/cr chars
 
- gitInfo=[];
-if ~exist('.git','file') || ~exist('.git/HEAD','file')
+gitInfo=[];
+if ~exist(fullfile(gitDir,'.git'),'file')...
+        || ~exist(fullfile(gitDir,'.git/HEAD'),'file')
     %Git is not present
-    return
+    return;
 end
 
 
 
 %Read in the HEAD information, this will tell us the location of the file
 %containing the SHA1
-text=fileread('.git/HEAD');
+text=fileread(fullfile(gitDir,'.git/HEAD'));
 parsed=textscan(text,'%s');
 
 if ~strcmp(parsed{1}{1},'ref:') || ~length(parsed{1})>1
@@ -83,15 +87,14 @@ branchName=name;
 %save branchname
 gitInfo.branch=branchName;
 
-
 %Read in SHA1
-SHA1text=fileread(fullfile(['.git/' pathstr],[name ext]));
+SHA1text=fileread( fullfile(gitDir,['.git/' pathstr],[name ext]) );
 SHA1=textscan(SHA1text,'%s');
 gitInfo.hash=SHA1{1}{1};
 
 
 %Read in config file
-config=fileread('.git/config');
+config=fileread(fullfile(gitDir,'.git/config'));
 %Find everything space delimited
 temp=textscan(config,'%s','delimiter','\n');
 lines=temp{1};
